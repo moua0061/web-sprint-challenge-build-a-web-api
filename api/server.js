@@ -21,4 +21,13 @@ server.use('*', (req, res) => {
 // Build your projects router in /api/projects/projects-router.js
 // Do NOT `server.listen()` inside this file!
 
+// error middelware
+server.use((err, req, res, next) => {
+    console.log('YO! something went wrong really bad!')
+    res.status(err.status || 500).json({
+        message: 'this is the super bad path',
+        error: err.message
+    })
+});
+
 module.exports = server;

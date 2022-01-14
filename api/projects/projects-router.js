@@ -1,21 +1,46 @@
 const express = require('express');
-const Project = require('./projects-model');
+const Projects = require('./projects-model');
 //import middleware here
+const { idIsValid, secondMiddlware } = require('./projects-middleware');
 
 const router = express.Router();
 
-//GET/api/projects
+//[GET] /api/projects
 router.get('/', (req, res, next) => {
     //returns an array of all the resources contained in the DB
+    Projects.get()
+        .then(something =>{
+            res.json(something)
+        })
+        .catch(next)
 })
 
-//import error middelware here
-router.use((err, req, res, next) => {
-    console.log('YO! something went wrong really bad!')
-    res.status(err.status || 500).json({
-        message: 'this is the super bad path',
-        error: err.message
-    })
-});
+//[GET] /api/projects/:id
+router.get('/:id', (req, res, next) => {
+    Projects.get(req.params.id)
+        .then(maybeAnId => {
+            // console.log(maybeAnId)
+            res.json(maybeAnId)
+        })
+        .catch(next)
+})
+
+//[POST] /api/projects
+router.post('/', (req, res, next) => {
+    const { name, description } = req.body
+    if(!name || !description) {
+        res.status(400).json({
+            message: "Missing name or body fields"
+        })
+    } else {
+        Projects.insert(req.body)
+            .then(newProject => {
+                res.status(201).json(newProject)
+            })
+            .catch(next)
+    }
+})
+
+
 
 module.exports = router;
