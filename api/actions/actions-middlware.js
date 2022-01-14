@@ -1,6 +1,7 @@
 const Actions = require('./actions-model');
 
 function actionIdIsValid(req, res, next) {
+    //returns a valid id
     Actions.get(req.params.id)
         .then(id => {
             if(!id) {

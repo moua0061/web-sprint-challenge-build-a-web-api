@@ -17,13 +17,7 @@ router.get('/', (req, res, next) => {
 router.get('/:id', actionIdIsValid, (req, res, next) => {
     Actions.get(req.params.id)
         .then(maybeAnId => {
-            if(!maybeAnId) {
-                res.status(404).json({
-                    message: 'id does not exist'
-                })
-            } else {
-                res.json(maybeAnId)
-            }
+            res.json(maybeAnId)
         })
         .catch(next)
 })
@@ -44,7 +38,7 @@ router.post('/', (req, res, next) => {
         }
 })
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', actionIdIsValid, (req, res, next) => {
     const {id} = req.params
     const { notes, description, project_id, completed } = req.body
     const actions = Actions.get(id)
@@ -65,7 +59,7 @@ router.put('/:id', (req, res, next) => {
         }
 })
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', actionIdIsValid, (req, res, next) => {
     Actions.remove(req.params.id)
         .then(deletedActions => {
             if(!deletedActions) {

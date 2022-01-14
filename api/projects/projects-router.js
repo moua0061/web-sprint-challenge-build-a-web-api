@@ -1,7 +1,7 @@
 const express = require('express');
 const Projects = require('./projects-model');
 //import middleware here
-const { idIsValid } = require('./projects-middleware');
+const idIsValid = require('./projects-middleware');
 
 const router = express.Router();
 
