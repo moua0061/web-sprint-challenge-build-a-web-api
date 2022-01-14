@@ -2,6 +2,7 @@
 const express = require('express')
 const router = express.Router();
 const Actions = require('./actions-model')
+const actionIdIsValid = require('./actions-middlware');
 
 // [GET] /api/actions
 router.get('/', (req, res, next) => {
@@ -13,7 +14,7 @@ router.get('/', (req, res, next) => {
 })
 
 // [GET] /api/actions/:id
-router.get('/:id', (req, res, next) => {
+router.get('/:id', actionIdIsValid, (req, res, next) => {
     Actions.get(req.params.id)
         .then(maybeAnId => {
             if(!maybeAnId) {
@@ -45,17 +46,35 @@ router.post('/', (req, res, next) => {
 
 router.put('/:id', (req, res, next) => {
     const {id} = req.params
-    Actions.update(id, req.body)
-        .then(updatedActions => {
-            res.json(updatedActions)
-        })
-        .catch(next)
+    const { notes, description, project_id, completed } = req.body
+    const actions = Actions.get(id)
+        if(!actions) {
+            res.status(404).json({
+                message: 'id does not exist'
+            })
+        } else if( !notes || !description || !project_id || !completed){
+            res.status(400).json({
+                message: ' notes, description, project id and completed required text fields'
+            })
+        } else {
+            Actions.update(id, req.body)
+                .then(updatedActions => {
+                    res.json(updatedActions)
+            })
+                .catch(next)   
+        }
 })
 
 router.delete('/:id', (req, res, next) => {
     Actions.remove(req.params.id)
         .then(deletedActions => {
-            res.json(deletedActions)
+            if(!deletedActions) {
+                res.status(404).json({
+                    message: 'id does not exist'
+                })
+            } else {
+                res.json(deletedActions)
+            }
         })
         .catch(next)
 })

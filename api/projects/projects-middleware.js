@@ -1,14 +1,20 @@
 const Projects = require('./projects-model');
 
-async function idIsValid(req, res, next) {
+function idIsValid(req, res, next) {
     //returns a valid id
+    Projects.get(req.params.id)
+        .then(id => {
+            if(!id) {
+                next({
+                    status: 404,
+                    message: 'id does not exist'
+                })
+            } else {
+                next()
+            }
+        })
+        .catch(next)    
 }
 
-function secondMiddlware(req, res, next) {
-    //returns a valid body ???
-}
 
-module.exports = {
-    idIsValid,
-    secondMiddlware
-}
+module.exports = idIsValid;
